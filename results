@@ -1,0 +1,33 @@
+String input = fileToPath("chess_utility.txt");
+        int min_utility = 539164;  //
+=============  FHM ALGORITHM - SPMF 0.97e - STATS =============
+ Total time ~ 25297 ms
+ Memory ~ 328.0244598388672 MB
+ High-utility itemsets count : 6406
+ Candidate count : 100511
+===================================================
+
+
+=============  HUIM-BPSOGA ALGORITHM v.1.0 - STATS =============
+ Total time ~ 11 ms
+gbest hui ~41
+ Memory ~ 3.2158203125 MB
+ High-utility itemsets count : 0
+===================================================
+
+=============  HUIM-BPSOGA ALGORITHM v.1.0 - STATS =============
+ pop_size ~ 30 
+ iteration ~ 1000
+ gbest hui ~ 685719
+ Total time ~ 466674 ms
+ Memory ~ 10.480995178222656 MB
+ High-utility itemsets count : 0
+===================================================
+=============  HUIM-BPSO ALGORITHM v.2.11 - STATS =============
+ pop_size ~ 30
+ iterations ~ 1000
+ gbest hui ~ 477666
+ Total time ~ 95296 ms
+ Memory ~ 23.08739471435547 MB
+ High-utility itemsets count : 0
+===================================================
