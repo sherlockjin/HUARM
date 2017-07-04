@@ -268,7 +268,10 @@ public class AlgoHUIM_BPSO {
 			long parEndTime = System.currentTimeMillis();
 			particleTime += parEndTime - parStartTime;
 
-			population.get(i).setNumOfOne(k);
+			crossover(i, pBest.get(i));
+			crossover(i, gBest);
+			//population.get(i).setNumOfOne(k);
+
 			// calculate fitness
 			population.get(i).setFitness(fitCalculate(population.get(i),database,twuPattern));
 			if (minUtility != 0 && population.get(i).getFitness() >= minUtility){
@@ -286,6 +289,77 @@ public class AlgoHUIM_BPSO {
 			//insert(population.get(i));
 			//}
 		}
+	}
+	/**
+	 * Method to crossover population[temp1] and temp2
+	 * @param temp1
+	 *            the number of particle to crossover
+	 * @param temp2
+	 *            the pbest particle or the gbest particle
+	 *
+	 */
+	private void crossover(int temp1, Particle temp2) {
+		int i = 0;
+		int tempA = 0, tempB = 0;// record the number of 1 in chromosomes
+
+		Particle temp1Particle = new Particle();
+		Particle temp2Particle = new Particle();
+		int position = (int) (Math.random() * twuPattern.size());// this is the
+		// position
+		// to
+		// crossover
+
+		/*temp1Particle.X = temp1.X.subList(0, position);
+		temp1Particle.X.addAll(temp2.X.subList(position,twuPattern.size()));
+
+		temp2Particle.X = temp2.X.subList(0, position);
+		temp2Particle.X.addAll(temp1.X.subList(position,twuPattern.size()));*/
+
+		for (i = 0; i < twuPattern.size(); i++) {// i<=position, crossover
+			if (i <= position) {
+				Integer temp = temp2.getX().get(i);
+				temp1Particle.getX().add(temp);
+				if (temp.equals(1)){
+					tempA++;
+				}
+				temp = population.get(temp1).getX().get(i);
+				temp2Particle.getX().add(temp);
+				if (temp.equals(1)){
+					tempB++;
+				}
+			} else {// i>position, not crossover
+				Integer temp = population.get(temp1).getX().get(i);
+				temp1Particle.getX().add(temp);
+				if (temp.equals(1)){
+					tempA++;
+				}
+				temp = temp2.getX().get(i);
+				temp2Particle.getX().add(temp);
+				if (temp.equals(1)){
+					tempB++;
+				}
+			}
+		}
+		// get the particle after crossover
+		temp1Particle.setNumOfOne(tempA);
+		//temp1Particle.fitness = fitCalculate(temp1Particle);
+		population.get(temp1).copyParticle(temp1Particle);
+
+
+
+		//temp2Particle.setNumOfOne(tempB);
+		//temp2Particle.fitness = fitCalculate(temp2Particle);
+
+
+		/*if(temp1Particle.fitness > temp2Particle.fitness){
+			population.get(temp1).setX(temp1Particle.getX());
+			population.get(temp1).setFitness(temp1Particle.getFitness());
+			population.get(temp1).setNumOfOne(tempA);
+		}else{
+			population.get(temp1).setX(temp2Particle.getX());
+			population.get(temp1).setFitness(temp2Particle.getFitness());
+			population.get(temp1).setNumOfOne(tempB);
+		}*/
 	}
 
 	/**

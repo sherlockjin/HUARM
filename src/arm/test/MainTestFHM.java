@@ -20,18 +20,17 @@ public class MainTestFHM {
 	public static void main(String [] arg) throws IOException{
 
 		String output = ".//FHMoutput.txt";
-
 		//String input = fileToPath("contextHUIM.txt");
 		//String input = fileToPath("chess_utility.txt");
 		//int min_utility = 300000;  //
 
-		int min_utility = 28;  //
+		int min_utility = 431331;  //
 
 
 		// Applying the HUIMiner algorithm
 		AlgoFHM fhm = new AlgoFHM();
 
-			fhm.runAlgorithm(Common.fileToPath(), output, min_utility);
+		fhm.runAlgorithm(Common.fileToPath(), output, min_utility);
 		fhm.printStats();
 
 	}
