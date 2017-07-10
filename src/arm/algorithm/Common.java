@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class Common {
     final public static int pop_size = 30;// the size of populations
-    final public static int iterations = 1000;// the iterations of algorithms
+    final public static int iterations = 500;// the iterations of algorithms
     //final public static String input = "DB_Utility.txt";
     final public static String input = "chess_utility.txt";
     //final public static String input = "contextHUIM.txt";

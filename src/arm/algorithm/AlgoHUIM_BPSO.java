@@ -11,6 +11,7 @@ import java.util.Map;
 
 import static arm.algorithm.Common.checkMemory;
 import static arm.algorithm.Common.fitCalculate;
+import static arm.algorithm.Common.iterations;
 
 
 /**
@@ -48,7 +49,7 @@ public class AlgoHUIM_BPSO {
 	long velTime = 0;
 	long particleTime = 0;
 
-	final double w = 1, c1 = 0.6, c2 = 0.4;//the parameter used in BPSO algorithm
+	//final double w = 1, c1 = 0.6, c2 = 0.4;//the parameter used in BPSO algorithm
 
 	// Create a list to store database
 	List<List<Pair>> database = new ArrayList<List<Pair>>();
@@ -121,7 +122,7 @@ public class AlgoHUIM_BPSO {
 			long updateStartTime = System.currentTimeMillis();
 			for (int i = 0; i < Common.iterations; i++) {
 				// update population and HUIset
-				update(minUtility);
+				update(minUtility,i);
 				gBestList.add(gBest.getFitness());
 				numOfHUI.add(huiSets.size());
 //				System.out.println(i + "-update end. HUIs No. is "
@@ -143,8 +144,8 @@ public class AlgoHUIM_BPSO {
 		// record end time
 		long endTimestamp = System.currentTimeMillis();
 		totalTime = endTimestamp - startTimestamp;
-		Common.printStatsOFBPSO(Common.pop_size,Common.iterations,gBest.getFitness(),totalTime, updateTime,
-				genPopTime,velTime,particleTime,maxMemory,huiSets.size());
+		Common.printStatsOFBPSO(Common.pop_size,Common.iterations,gBest.getFitness(),totalTime,
+				genPopTime,updateTime,velTime,particleTime,maxMemory,huiSets.size());
 	}
 
 	/**
@@ -230,10 +231,10 @@ public class AlgoHUIM_BPSO {
 	 *
 	 * @param minUtility
 	 */
-	private void update(int minUtility) {
+	private void update(int minUtility, int iter) {
 		int i, j, k;
 		double r1, r2, temp1, temp2;
-
+		double c1 = 0.4 ,c2 = 0.6;
 		for (i = 0; i < Common.pop_size; i++) {
 			k = 0;// record the count of 1 in particle
 			r1 = Math.random();
@@ -268,9 +269,16 @@ public class AlgoHUIM_BPSO {
 			long parEndTime = System.currentTimeMillis();
 			particleTime += parEndTime - parStartTime;
 
-			crossover(i, pBest.get(i));
-			crossover(i, gBest);
-			//population.get(i).setNumOfOne(k);
+			c2 = 0.2+0.6*iter/iterations;
+			if(r1 > c2){
+				crossover(i, pBest.get(i));
+			}
+			if(r2 < c2){
+				crossover(i, gBest);
+			}
+			if( r1 <= c2 && r2 >= c2) {
+				population.get(i).setNumOfOne(k);
+			}
 
 			// calculate fitness
 			population.get(i).setFitness(fitCalculate(population.get(i),database,twuPattern));
