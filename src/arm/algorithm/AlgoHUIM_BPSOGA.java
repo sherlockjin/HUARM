@@ -67,6 +67,9 @@ public class AlgoHUIM_BPSOGA {
 	// this class represent an item and its utility in a transaction
 
 	List<Integer> gBestList =  new ArrayList<Integer>(); //store gBest's fitness every iteration
+	List<Integer> pBestList =  new ArrayList<Integer>(); //store pBest's average fitness every iteration
+	List<Float> pBestSim =  new ArrayList<Float>();
+	List<Float> popSim =  new ArrayList<Float>();
 	List<Integer> numOfHUI =  new ArrayList<Integer>(); //store HUI's num every iteration
 	Particle gBest = new Particle();// the gBest particle in populations
 	List<Particle> pBest = new ArrayList<Particle>();// each pBest particle in	populations,
@@ -127,6 +130,9 @@ public class AlgoHUIM_BPSOGA {
 			genPopTime = genPopEndTimestamp - genPopStartTimestamp;
 
 			gBestList.add(gBest.getFitness());
+			pBestList.add(Common.calAvg(pBest));
+			pBestSim.add(Common.calSim(pBest));
+			popSim.add(Common.calSim(population));
 			numOfHUI.add(huiSets.size());
 
 			long updateStartTime = System.currentTimeMillis();
@@ -135,6 +141,9 @@ public class AlgoHUIM_BPSOGA {
 				update(minUtility);
 
 				gBestList.add(gBest.getFitness());
+				pBestList.add(Common.calAvg(pBest));
+				pBestSim.add(Common.calSim(pBest));
+				popSim.add(Common.calSim(population));
 				numOfHUI.add(huiSets.size());
 //				System.out.println(i + "-update end. HUIs No. is "
 //						+ huiSets.size());
@@ -146,7 +155,7 @@ public class AlgoHUIM_BPSOGA {
 		writer = new BufferedWriter(new FileWriter(output));
 		gBestWriter = new BufferedWriter(new FileWriter(".//GBest"+output.substring(3)));
 		Common.writeOut(writer,huiSets);
-		Common.writeGbest(gBestWriter,gBestList,numOfHUI);
+		Common.writeGbest(gBestWriter,gBestList,pBestList,pBestSim,popSim,numOfHUI);
 		// check the memory usage again and close the file.
 		maxMemory = checkMemory(maxMemory);
 		// close output file

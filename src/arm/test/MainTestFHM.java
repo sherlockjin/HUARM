@@ -24,7 +24,7 @@ public class MainTestFHM {
 		//String input = fileToPath("chess_utility.txt");
 		//int min_utility = 300000;  //
 
-		int min_utility = 431331;  //
+		int min_utility = 301331;  //
 
 
 		// Applying the HUIMiner algorithm

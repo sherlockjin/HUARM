@@ -61,6 +61,9 @@ public class AlgoHUIM_Random {
 	// this class represent an item and its utility in a transaction
 
 	List<Integer> gBestList =  new ArrayList<Integer>(); //store gBest's fitness every iteration
+	List<Integer> pBestList =  new ArrayList<Integer>(); //store pBest's average fitness every iteration
+	List<Float> pBestSim =  new ArrayList<Float>();
+	List<Float> popSim =  new ArrayList<Float>();
 	List<Integer> numOfHUI =  new ArrayList<Integer>(); //store HUI's num every iteration
 	Particle gBest = new Particle();// the gBest particle in populations
 	List<Particle> pBest = new ArrayList<Particle>();// each pBest particle in	populations,
@@ -121,12 +124,18 @@ public class AlgoHUIM_Random {
 			genPopTime = genPopEndTimestamp - genPopStartTimestamp;
 
 			gBestList.add(gBest.getFitness());
+			pBestList.add(Common.calAvg(pBest));
+			pBestSim.add(Common.calSim(pBest));
+			popSim.add(Common.calSim(population));
 			numOfHUI.add(huiSets.size());
 			long updateStartTime = System.currentTimeMillis();
 			for (int i = 0; i < Common.iterations; i++) {
 				// update population and HUIset
 				update(minUtility);
 				gBestList.add(gBest.getFitness());
+				pBestList.add(Common.calAvg(pBest));
+				pBestSim.add(Common.calSim(pBest));
+				popSim.add(Common.calSim(population));
 				numOfHUI.add(huiSets.size());
 //				System.out.println(i + "-update end. HUIs No. is "
 //						+ huiSets.size());
@@ -138,7 +147,7 @@ public class AlgoHUIM_Random {
 		writer = new BufferedWriter(new FileWriter(output));
 		gBestWriter = new BufferedWriter(new FileWriter(".//GBest"+output.substring(3)));
 		Common.writeOut(writer,huiSets);
-		Common.writeGbest(gBestWriter,gBestList,numOfHUI);
+		Common.writeGbest(gBestWriter,gBestList,pBestList,pBestSim,popSim,numOfHUI);
 		// check the memory usage again and close the file.
 		maxMemory = checkMemory(maxMemory);
 		// close output file
@@ -165,6 +174,7 @@ public class AlgoHUIM_Random {
 		for (i = 0; i < Common.pop_size; i++) {
 			// initial particles
 			Particle particleForPop = new Particle(twuPattern.size());
+			Particle particleForPbest = new Particle();
 			j = 0;
 			// k is the count of 1 in particle
 			k = (int) (Math.random() * twuPattern.size());
@@ -182,6 +192,8 @@ public class AlgoHUIM_Random {
 			particleForPop.setFitness(fitCalculate(particleForPop,database,twuPattern));
 			// insert particle into population
 			population.add(i, particleForPop);
+			particleForPbest.copyParticle(particleForPop);
+			pBest.add(i, particleForPbest);
 			// update huiSets
 			if (minUtility != 0 && population.get(i).getFitness() >= minUtility) {
 				insert(population.get(i));
@@ -233,8 +245,11 @@ public class AlgoHUIM_Random {
 				insert(population.get(i));
 			}
 			// update gBest
-			if (population.get(i).getFitness() > gBest.getFitness()) {
-				gBest.copyParticle(population.get(i));
+			if (population.get(i).getFitness() > pBest.get(i).getFitness()) {
+				pBest.get(i).copyParticle(population.get(i));
+				if (pBest.get(i).getFitness() > gBest.getFitness()) {
+					gBest.copyParticle(pBest.get(i));
+				}
 			}
 
 		}

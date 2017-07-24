@@ -58,9 +58,13 @@ public class AlgoHUIM_BPSO {
 
 	BufferedWriter writer = null; // writer to write the output file
 	BufferedWriter gBestWriter = null;
+	BufferedWriter pBestWriter = null;
 	// this class represent an item and its utility in a transaction
 
 	List<Integer> gBestList =  new ArrayList<Integer>(); //store gBest's fitness every iteration
+	List<Integer> pBestList =  new ArrayList<Integer>(); //store pBest's average fitness every iteration
+	List<Float> pBestSim =  new ArrayList<Float>();
+	List<Float> popSim =  new ArrayList<Float>();
 	List<Integer> numOfHUI =  new ArrayList<Integer>(); //store HUI's num every iteration
 	Particle gBest = new Particle();// the gBest particle in populations
 	List<Particle> pBest = new ArrayList<Particle>();// each pBest particle in	populations,
@@ -118,13 +122,28 @@ public class AlgoHUIM_BPSO {
 			// initial population
 			generatePop(minUtility);
 			gBestList.add(gBest.getFitness());
+			pBestList.add(Common.calAvg(pBest));
+			pBestSim.add(Common.calSim(pBest));
+			popSim.add(Common.calSim(population));
 			numOfHUI.add(huiSets.size());
 			long updateStartTime = System.currentTimeMillis();
 			for (int i = 0; i < Common.iterations; i++) {
 				// update population and HUIset
 				update(minUtility,i);
+
 				gBestList.add(gBest.getFitness());
+				pBestList.add(Common.calAvg(pBest));
+				pBestSim.add(Common.calSim(pBest));
+				popSim.add(Common.calSim(population));
 				numOfHUI.add(huiSets.size());
+//				if(gBest.getFitness()==685719){
+//					for(int j = 0; j < pBest.size(); j++) {
+//						insert(pBest.get(j));
+//					}
+//					System.out
+//							.println(" iterations ~ " + i);
+//					break;
+//				}
 //				System.out.println(i + "-update end. HUIs No. is "
 //						+ huiSets.size());
 			}
@@ -134,8 +153,9 @@ public class AlgoHUIM_BPSO {
 		}
 		writer = new BufferedWriter(new FileWriter(output));
 		gBestWriter = new BufferedWriter(new FileWriter(".//GBest"+output.substring(3)));
+		//pBestWriter = new BufferedWriter(new FileWriter(".//PBest"+output.substring(3)));
 		Common.writeOut(writer,huiSets);
-		Common.writeGbest(gBestWriter,gBestList,numOfHUI);
+		Common.writeGbest(gBestWriter,gBestList,pBestList,pBestSim,popSim,numOfHUI);
 		// check the memory usage again and close the file.
 		maxMemory = checkMemory(maxMemory);
 		// close output file
@@ -246,10 +266,10 @@ public class AlgoHUIM_BPSO {
 						* (pBest.get(i).getX().get(j) - population.get(i).getX().get(j))
 						+ r2 * (gBest.getX().get(j) - population.get(i).getX().get(j));
 				V.get(i).set(j, temp);
-				if (V.get(i).get(j) < -2.0)
-					V.get(i).set(j, -2.0);
-				else if (V.get(i).get(j) > 2.0)
-					V.get(i).set(j, 2.0);
+				if (V.get(i).get(j) < -4.0)
+					V.get(i).set(j, -4.0);
+				else if (V.get(i).get(j) > 4.0)
+					V.get(i).set(j, 4.0);
 			}
 			long velEndTime = System.currentTimeMillis();
 			velTime += velEndTime - velStartTime;
@@ -269,6 +289,14 @@ public class AlgoHUIM_BPSO {
 			long parEndTime = System.currentTimeMillis();
 			particleTime += parEndTime - parStartTime;
 
+			//BPSO 没有交叉
+			//population.get(i).setNumOfOne(k);
+
+			//GABPSO2 始终进行交叉
+//			crossover(i, pBest.get(i));
+//			crossover(i, gBest);
+
+			//GABPSO4 按一定概率进行交叉
 			c2 = 0.2+0.6*iter/iterations;
 			if(r1 > c2){
 				crossover(i, pBest.get(i));
@@ -279,7 +307,6 @@ public class AlgoHUIM_BPSO {
 			if( r1 <= c2 && r2 >= c2) {
 				population.get(i).setNumOfOne(k);
 			}
-
 			// calculate fitness
 			population.get(i).setFitness(fitCalculate(population.get(i),database,twuPattern));
 			if (minUtility != 0 && population.get(i).getFitness() >= minUtility){

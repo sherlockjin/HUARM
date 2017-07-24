@@ -21,9 +21,9 @@ public class Common {
     final public static int pop_size = 30;// the size of populations
     final public static int iterations = 500;// the iterations of algorithms
     //final public static String input = "DB_Utility.txt";
+    //final public static String input = "mushroom_utility.txt";
     final public static String input = "chess_utility.txt";
-    //final public static String input = "contextHUIM.txt";
-    final public static double min_utility_thres = 0.2;  //
+    final public static double min_utility_thres = 0;  //
     public static String fileToPath() throws UnsupportedEncodingException{
 
         URL  url =  Common.class .getResource("../test/"+input);      // 获得当前类所在路径
@@ -217,6 +217,59 @@ public class Common {
         }
         return maxMemory;
     }
+
+    /**
+     * 计算particles的平均适应度值
+     * @param particles
+     * @return
+     */
+    public static int calAvg(List<Particle> particles){
+        int sum = 0;
+        for(int i= 0; i < particles.size(); i++){
+            sum += particles.get(i).getFitness();
+        }
+        return sum/particles.size();
+    }
+    /**
+     * 计算particles的相似度
+     * @param particles
+     * @return
+     */
+    public static float calSim(List<Particle> particles){
+        float jaccard = 0;
+        for(int i= 0; i < particles.size(); i++){
+            for(int j = i+1 ; j < particles.size(); j++){
+                jaccard += calJaccard(particles.get(i).getX(),particles.get(j).getX());
+            }
+        }
+        return jaccard;
+    }
+    static float calJaccard(List<Integer> a, List<Integer> b){
+        float p = 0;
+        float q = 0;
+        float r = 0;
+        float s = 0;
+
+        for(int i = 0; i < a.size(); i++){
+            if(a.get(i).equals(1)){
+                if(b.get(i).equals(1)){
+                    p++;
+                }
+                else{
+                    q++;
+                }
+            }else{
+                if(b.get(i).equals(1)){
+                    r++;
+                }
+                else{
+                    s++;
+                }
+            }
+        }
+        return p/(p+q+r);
+    }
+
     /**
      * Method to write a high utility itemset to the output file.
      *
@@ -243,12 +296,19 @@ public class Common {
      *
      * @throws IOException
      */
-    public static void writeGbest(BufferedWriter gBestWriter, List<Integer> gBestList, List<Integer> numsOFHUI) throws IOException {
+    public static void writeGbest(BufferedWriter gBestWriter, List<Integer> gBestList, List<Integer> pBestList,  List<Float> pBestSim, List<Float> popSim, List<Integer> numsOFHUI) throws IOException {
         // Create a string buffer
         StringBuilder buffer = new StringBuilder();
+        int size = gBestList.size();
         // append the prefix
-        for (int i = 0; i < iterations; i++) {
+        for (int i = 0; i < size; i++) {
             buffer.append(gBestList.get(i));
+            buffer.append(" ");
+            buffer.append(pBestList.get(i));
+            buffer.append(" ");
+            buffer.append(pBestSim.get(i));
+            buffer.append(" ");
+            buffer.append(popSim.get(i));
             buffer.append(" ");
             buffer.append(numsOFHUI.get(i));
             buffer.append(System.lineSeparator());
