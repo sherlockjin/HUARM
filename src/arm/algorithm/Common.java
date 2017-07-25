@@ -23,7 +23,7 @@ public class Common {
     //final public static String input = "DB_Utility.txt";
     //final public static String input = "mushroom_utility.txt";
     final public static String input = "chess_utility.txt";
-    final public static double min_utility_thres = 0;  //
+    final public static double min_utility_thres = 0.296;  //
     public static String fileToPath() throws UnsupportedEncodingException{
 
         URL  url =  Common.class .getResource("../test/"+input);      // 获得当前类所在路径

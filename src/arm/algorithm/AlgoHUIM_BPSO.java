@@ -130,12 +130,28 @@ public class AlgoHUIM_BPSO {
 			for (int i = 0; i < Common.iterations; i++) {
 				// update population and HUIset
 				update(minUtility,i);
+				float pbestSim = Common.calSim(pBest);
+				int pbestAvg = Common.calAvg(pBest);
 
 				gBestList.add(gBest.getFitness());
-				pBestList.add(Common.calAvg(pBest));
-				pBestSim.add(Common.calSim(pBest));
+				pBestList.add(pbestAvg);
+				pBestSim.add(pbestSim);
 				popSim.add(Common.calSim(population));
 				numOfHUI.add(huiSets.size());
+				/*if(huiSets.size()!=0 && pbestSim <= 400){
+					minUtility = 0;
+					huiSets.clear();
+				}*/
+				double odd = (0.0+pbestAvg) / gBest.getFitness();
+				if(minUtility == 0 && pbestSim > 400){
+					minUtility = gBest.getFitness();
+					System.out.println("the iteration ~ " + i);
+					System.out.println("the threthold ~ " + minUtility);
+				}
+				if(minUtility == 0 && odd > 0.99){
+					minUtility = gBest.getFitness();
+					System.out.println("the threthold ~ " + minUtility);
+				}
 //				if(gBest.getFitness()==685719){
 //					for(int j = 0; j < pBest.size(); j++) {
 //						insert(pBest.get(j));
@@ -146,11 +162,13 @@ public class AlgoHUIM_BPSO {
 //				}
 //				System.out.println(i + "-update end. HUIs No. is "
 //						+ huiSets.size());
+
 			}
 			long updateEndTime = System.currentTimeMillis();
 			updateTime = updateEndTime -  updateStartTime;
 			
 		}
+
 		writer = new BufferedWriter(new FileWriter(output));
 		gBestWriter = new BufferedWriter(new FileWriter(".//GBest"+output.substring(3)));
 		//pBestWriter = new BufferedWriter(new FileWriter(".//PBest"+output.substring(3)));
@@ -290,21 +308,36 @@ public class AlgoHUIM_BPSO {
 			particleTime += parEndTime - parStartTime;
 
 			//BPSO 没有交叉
-			//population.get(i).setNumOfOne(k);
+//			population.get(i).setNumOfOne(k);
 
 			//GABPSO2 始终进行交叉
 //			crossover(i, pBest.get(i));
 //			crossover(i, gBest);
 
 			//GABPSO4 按一定概率进行交叉
-			c2 = 0.2+0.6*iter/iterations;
-			if(r1 > c2){
-				crossover(i, pBest.get(i));
-			}
-			if(r2 < c2){
-				crossover(i, gBest);
-			}
-			if( r1 <= c2 && r2 >= c2) {
+//			c2 = 0.2+0.6*iter/iterations;
+//			if(r1 > c2){
+//				crossover(i, pBest.get(i));
+//			}
+//			if(r2 < c2){
+//				crossover(i, gBest);
+//			}
+//			if( r1 <= c2 && r2 >= c2) {
+//				population.get(i).setNumOfOne(k);
+//			}
+
+			if(iter > 109){
+				c2 = 0.2+0.6*iter/iterations;
+				if(r1 > c2){
+					crossover(i, pBest.get(i));
+				}
+				if(r2 < c2){
+					crossover(i, gBest);
+				}
+				if( r1 <= c2 && r2 >= c2) {
+					population.get(i).setNumOfOne(k);
+				}
+			}else{
 				population.get(i).setNumOfOne(k);
 			}
 			// calculate fitness
@@ -412,6 +445,7 @@ public class AlgoHUIM_BPSO {
 				temp.append(' ');
 			}
 		}
+		//huiSets.add(new HUI(temp.toString(), tempParticle.getFitness()));
 		// huiSets is null
 		if (huiSets.size() == 0) {
 			huiSets.add(new HUI(temp.toString(), tempParticle.getFitness()));
