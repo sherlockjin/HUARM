@@ -18,12 +18,13 @@ import java.util.Map;
  * Created by jinxiaole on 2017/6/29.
  */
 public class Common {
-    final public static int pop_size = 30;// the size of populations
-    final public static int iterations = 500;// the iterations of algorithms
+    final public static int pop_size = 10;// the size of populations
+    final public static int iterations = 20;// the iterations of algorithms
     //final public static String input = "DB_Utility.txt";
+    final public static String input = "contextHUIM.txt";
     //final public static String input = "mushroom_utility.txt";
-    final public static String input = "chess_utility.txt";
-    final public static double min_utility_thres = 0.296;  //
+    //final public static String input = "chess_utility.txt";
+    final public static double min_utility_thres = 0;  //
     public static String fileToPath() throws UnsupportedEncodingException{
 
         URL  url =  Common.class .getResource("../test/"+input);      // 获得当前类所在路径
@@ -82,13 +83,12 @@ public class Common {
     /**
      * Method to calculate the fitness of each particle
      *
-     * @return fitness
      */
-    public static int fitCalculate(Particle particle, List<List<Pair>> database, List<Integer> twuPattern) {
+    public static void fitCalculate(Particle particle, List<List<Pair>> database, List<Integer> twuPattern, List<Particle> particles) {
         List<Integer> tempParticle = particle.getX();
         int k = particle.getNumOfOne();
         if (k == 0)
-            return 0;
+            return ;
         int i, j, p, q, temp;
 
         int sum, fitness = 0;
@@ -123,13 +123,37 @@ public class Common {
                 fitness = fitness + sum;
             }
         }
-        return fitness;
+        particle.setUtility(fitness);
+        float sim = 0;
+        for(int num = 0; num < particles.size(); num++){
+            sim += calJaccard(particle.getX(), particles.get(num).getX());
+        }
+        if(particles.size() != 0) {
+            sim = sim / particles.size();
+            particle.setSim(sim);
+            particle.setFitness((float)fitness/particles.get(0).getUtility()*3+(1-sim));
+        }else{
+            particle.setSim(-1);
+            particle.setFitness((float)fitness);
+        }
+
     }
 
+//    public static float utilityCalculate(Particle particle, List<Particle> particles) {
+//
+//        float sim = 0;
+//        for(int num = 0; num < particles.size(); num++){
+//            sim += calJaccard(particle.getX(), particles.get(num).getX());
+//        }
+//        if(particles.size() != 0) {
+//            sim = sim / particles.size();
+//        }
+//        return particle.getFitness()/(1-sim);
+//    }
     /**
      * Print statistics about the latest execution to System.out.
      */
-    public static void printStatsOFBPSOGA(int pop_size,int iterations,int gbestFitness, long totalTime,long genPopTime, long updateTime, long mutationTime, long crossPBestTime,long crossGBestTime,double maxMemory, int huiSetsSize) {
+    public static void printStatsOFBPSOGA(int pop_size,int iterations,float gbestFitness, long totalTime,long genPopTime, long updateTime, long mutationTime, long crossPBestTime,long crossGBestTime,double maxMemory, int huiSetsSize) {
         System.out
                 .println("=============  HUIM-BPSOGA ALGORITHM v.1.0 - STATS =============");
         System.out
@@ -158,7 +182,7 @@ public class Common {
     /**
      * Print statistics about the latest execution to System.out.
      */
-    public static void printStatsOFBPSO(int pop_size,int iterations,int gbestFitness, long totalTime,long genPopTime, long updateTime, long velTime, long particleTime,double maxMemory, int huiSetsSize) {
+    public static void printStatsOFBPSO(int pop_size,int iterations,float gbestFitness, long totalTime,long genPopTime, long updateTime, long velTime, long particleTime,double maxMemory, int huiSetsSize) {
         System.out
                 .println("=============  HUIM-BPSO ALGORITHM v.1.0 - STATS =============");
         System.out
@@ -186,7 +210,7 @@ public class Common {
     /**
      * Print statistics about the latest execution to System.out.
      */
-    public static void printStatsOFRandom(int pop_size,int iterations,int gbestFitness, long totalTime,double maxMemory, int huiSetsSize) {
+    public static void printStatsOFRandom(int pop_size,int iterations,float gbestFitness, long totalTime,double maxMemory, int huiSetsSize) {
         System.out
                 .println("=============  HUIM-Random ALGORITHM v.1.0 - STATS =============");
         System.out
@@ -223,8 +247,8 @@ public class Common {
      * @param particles
      * @return
      */
-    public static int calAvg(List<Particle> particles){
-        int sum = 0;
+    public static float calAvg(List<Particle> particles){
+        float sum = 0;
         for(int i= 0; i < particles.size(); i++){
             sum += particles.get(i).getFitness();
         }
@@ -296,11 +320,13 @@ public class Common {
      *
      * @throws IOException
      */
-    public static void writeGbest(BufferedWriter gBestWriter, List<Integer> gBestList, List<Integer> pBestList,  List<Float> pBestSim, List<Float> popSim, List<Integer> numsOFHUI) throws IOException {
+    public static void writeGbest(BufferedWriter gBestWriter, List<Float> gBestList, List<Float> pBestList,  List<Float> pBestSim, List<Float> popSim, List<Integer> numsOFHUI) throws IOException {
         // Create a string buffer
         StringBuilder buffer = new StringBuilder();
         int size = gBestList.size();
         // append the prefix
+        buffer.append("gbest pbestAvg pbestSim popSim numsOfHui");
+        buffer.append(System.lineSeparator());
         for (int i = 0; i < size; i++) {
             buffer.append(gBestList.get(i));
             buffer.append(" ");

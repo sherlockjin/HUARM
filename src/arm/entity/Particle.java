@@ -8,7 +8,9 @@ import java.util.List;
  */
 public class Particle {
     List<Integer> X;// the particle
-    int fitness;// fitness value of particle
+    float fitness;// fitness value of particle
+    int utility;
+    float sim;
     int numOfOne;
     public List<Integer> getX() {
         return X;
@@ -18,12 +20,28 @@ public class Particle {
         X = x;
     }
 
-    public int getFitness() {
+    public float getFitness() {
         return fitness;
     }
 
-    public void setFitness(int fitness) {
+    public void setFitness(float fitness) {
         this.fitness = fitness;
+    }
+
+    public int getUtility() {
+        return utility;
+    }
+
+    public void setUtility(int utility) {
+        this.utility = utility;
+    }
+
+    public float getSim() {
+        return sim;
+    }
+
+    public void setSim(float sim) {
+        this.sim = sim;
     }
 
     public int getNumOfOne() {
@@ -52,6 +70,8 @@ public class Particle {
         }
         X.addAll(particle.X);
         fitness = particle.fitness;
+        utility = particle.utility;
+        sim = particle.sim;
         numOfOne = particle.numOfOne;
     }
 

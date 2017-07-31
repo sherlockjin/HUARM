@@ -64,22 +64,25 @@ public class AlgoHUIM_BPSOGA {
 
 	BufferedWriter writer = null; // writer to write the output file
 	BufferedWriter gBestWriter = null;
+	BufferedWriter pBestWriter = null;
 	// this class represent an item and its utility in a transaction
 
-	List<Integer> gBestList =  new ArrayList<Integer>(); //store gBest's fitness every iteration
-	List<Integer> pBestList =  new ArrayList<Integer>(); //store pBest's average fitness every iteration
+	List<Float> gBestList =  new ArrayList<Float>(); //store gBest's fitness every iteration
+	List<Float> pBestList =  new ArrayList<Float>(); //store pBest's average fitness every iteration
 	List<Float> pBestSim =  new ArrayList<Float>();
 	List<Float> popSim =  new ArrayList<Float>();
 	List<Integer> numOfHUI =  new ArrayList<Integer>(); //store HUI's num every iteration
 	Particle gBest = new Particle();// the gBest particle in populations
+	List<Particle> gBests = new ArrayList<Particle>();
 	List<Particle> pBest = new ArrayList<Particle>();// each pBest particle in	populations,
-	List <Particle> population = new ArrayList<Particle>();// populations
+	List<Particle> population = new ArrayList<Particle>();// populations
+	List<List<Double>> V = new ArrayList<List<Double>>();// the velocity of each
 	List<HUI> huiSets = new ArrayList<HUI>();// the set of HUIs
 
 	List<Double> percentage = new ArrayList<Double>();// the portation of twu
-														// value of each
-														// 1-HTWUIs in sum of
-														// twu value
+	// value of each
+	// 1-HTWUIs in sum of
+	// twu value
 
 
 	/**
@@ -214,14 +217,14 @@ public class AlgoHUIM_BPSOGA {
 
 			}
 			// calculate the fitness of each particle
-			particleForPop.setFitness(fitCalculate(particleForPop,database,twuPattern));
+			fitCalculate(particleForPop,database,twuPattern,gBests);
 			// insert particle into population
 			population.add(i, particleForPop);
 			// initial pBest
 			particleForPbest.copyParticle(particleForPop);
 			pBest.add(i, particleForPbest);
 			// update huiSets
-			if (minUtility != 0 && population.get(i).getFitness() >= minUtility) {
+			if (minUtility != 0 && population.get(i).getUtility() >= minUtility) {
 				insert(population.get(i));
 			}
 			// update gBest
@@ -278,8 +281,8 @@ public class AlgoHUIM_BPSOGA {
 
 
 			// calculate fitness
-			population.get(i).setFitness(fitCalculate(population.get(i),database,twuPattern));
-			if (minUtility != 0 && population.get(i).getFitness() >= minUtility){
+			fitCalculate(population.get(i),database,twuPattern, gBests);
+			if (minUtility != 0 && population.get(i).getUtility() >= minUtility){
 				insert(population.get(i));
 			}
 			// update pBest & gBest
@@ -311,7 +314,7 @@ public class AlgoHUIM_BPSOGA {
 		}
 		// huiSets is null
 		if (huiSets.size() == 0) {
-			huiSets.add(new HUI(temp.toString(), tempParticle.getFitness()));
+			huiSets.add(new HUI(temp.toString(), tempParticle.getUtility()));
 		} else {
 			// huiSets is not null, judge whether exist an itemset in huiSets
 			// same with tempParticle
@@ -323,7 +326,7 @@ public class AlgoHUIM_BPSOGA {
 			// if not exist same itemset in huiSets with tempParticle,insert it
 			// into huiSets
 			if (i == huiSets.size())
-				huiSets.add(new HUI(temp.toString(), tempParticle.getFitness()));
+				huiSets.add(new HUI(temp.toString(), tempParticle.getUtility()));
 		}
 	}
 

@@ -61,12 +61,13 @@ public class AlgoHUIM_BPSO {
 	BufferedWriter pBestWriter = null;
 	// this class represent an item and its utility in a transaction
 
-	List<Integer> gBestList =  new ArrayList<Integer>(); //store gBest's fitness every iteration
-	List<Integer> pBestList =  new ArrayList<Integer>(); //store pBest's average fitness every iteration
+	List<Float> gBestList =  new ArrayList<Float>(); //store gBest's fitness every iteration
+	List<Float> pBestList =  new ArrayList<Float>(); //store pBest's average fitness every iteration
 	List<Float> pBestSim =  new ArrayList<Float>();
 	List<Float> popSim =  new ArrayList<Float>();
 	List<Integer> numOfHUI =  new ArrayList<Integer>(); //store HUI's num every iteration
 	Particle gBest = new Particle();// the gBest particle in populations
+	List<Particle> gBests = new ArrayList<Particle>();
 	List<Particle> pBest = new ArrayList<Particle>();// each pBest particle in	populations,
 	List<Particle> population = new ArrayList<Particle>();// populations
 	List<List<Double>> V = new ArrayList<List<Double>>();// the velocity of each
@@ -119,53 +120,40 @@ public class AlgoHUIM_BPSO {
 
 		// Mine the database recursively
 		if (twuPattern.size() > 0) {
-			// initial population
-			generatePop(minUtility);
-			gBestList.add(gBest.getFitness());
-			pBestList.add(Common.calAvg(pBest));
-			pBestSim.add(Common.calSim(pBest));
-			popSim.add(Common.calSim(population));
-			numOfHUI.add(huiSets.size());
-			long updateStartTime = System.currentTimeMillis();
-			for (int i = 0; i < Common.iterations; i++) {
-				// update population and HUIset
-				update(minUtility,i);
-				float pbestSim = Common.calSim(pBest);
-				int pbestAvg = Common.calAvg(pBest);
+//			long updateStartTime = System.currentTimeMillis();
 
+			//direction表示搜索的方向
+			for(int direction = 0; direction < 1; direction++) {
+
+				population.clear();
+				pBest.clear();
+				generatePop(minUtility);
 				gBestList.add(gBest.getFitness());
-				pBestList.add(pbestAvg);
-				pBestSim.add(pbestSim);
+				pBestList.add(Common.calAvg(pBest));
+				pBestSim.add(Common.calSim(pBest));
 				popSim.add(Common.calSim(population));
 				numOfHUI.add(huiSets.size());
-				/*if(huiSets.size()!=0 && pbestSim <= 400){
-					minUtility = 0;
-					huiSets.clear();
-				}*/
-				double odd = (0.0+pbestAvg) / gBest.getFitness();
-				if(minUtility == 0 && pbestSim > 400){
-					minUtility = gBest.getFitness();
-					System.out.println("the iteration ~ " + i);
-					System.out.println("the threthold ~ " + minUtility);
+				for (int i = 0; i < Common.iterations; i++) {
+					// update population and HUIset
+					update(minUtility, i);
+					float pbestSim = Common.calSim(pBest);
+					float pbestAvg = Common.calAvg(pBest);
+
+					gBestList.add(gBest.getFitness());
+					pBestList.add(pbestAvg);
+					pBestSim.add(pbestSim);
+					popSim.add(Common.calSim(population));
+					numOfHUI.add(huiSets.size());
+
 				}
-				if(minUtility == 0 && odd > 0.99){
-					minUtility = gBest.getFitness();
-					System.out.println("the threthold ~ " + minUtility);
-				}
-//				if(gBest.getFitness()==685719){
-//					for(int j = 0; j < pBest.size(); j++) {
-//						insert(pBest.get(j));
-//					}
-//					System.out
-//							.println(" iterations ~ " + i);
-//					break;
-//				}
-//				System.out.println(i + "-update end. HUIs No. is "
-//						+ huiSets.size());
+				System.out.println(direction + "-update end. HUIs No. is "
+						+ huiSets.size());
+                gBests.add(gBest);
+
 
 			}
-			long updateEndTime = System.currentTimeMillis();
-			updateTime = updateEndTime -  updateStartTime;
+//			long updateEndTime = System.currentTimeMillis();
+//			updateTime = updateEndTime -  updateStartTime;
 			
 		}
 
@@ -198,23 +186,6 @@ public class AlgoHUIM_BPSO {
 		int i, j, k, temp;
 		// initial percentage according to the twu value of 1-HTWUIs
 		percentage = Common.roulettePercent(twuPattern,mapItemToTWU);
-//		Particle firstParticleForPop = new Particle(twuPattern.size());
-//		firstParticleForPop.X.clear();
-//		firstParticleForPop.X.add(0,0);
-//		firstParticleForPop.X.add(1,1);
-//		firstParticleForPop.X.add(2,0);
-//		firstParticleForPop.X.add(3,0);
-//		firstParticleForPop.X.add(4,1);
-//		firstParticleForPop.X.add(5,0);
-//		firstParticleForPop.X.add(6,0);
-//		firstParticleForPop.numOfOne = 2;
-//		firstParticleForPop.fitness = fitCalculate(firstParticleForPop);
-//		// insert particle into population
-//		population.add(0,firstParticleForPop);
-//		Particle firstParticleForPbest = new Particle();
-//		firstParticleForPbest.copyParticle(firstParticleForPop);
-//		pBest.add(0,firstParticleForPbest);
-//		gBest.copyParticle(pBest.get(0));
 		for (i = 0; i < Common.pop_size; i++) {
 			// initial particles
 			Particle particleForPop = new Particle(twuPattern.size());
@@ -233,14 +204,14 @@ public class AlgoHUIM_BPSO {
 
 			}
 			// calculate the fitness of each particle
-			particleForPop.setFitness(fitCalculate(particleForPop,database,twuPattern));
+			fitCalculate(particleForPop,database,twuPattern,gBests);
 			// insert particle into population
 			population.add(i, particleForPop);
 			// initial pBest
 			particleForPbest.copyParticle(particleForPop);
 			pBest.add(i, particleForPbest);
 			// update huiSets
-			if (minUtility != 0 && population.get(i).getFitness() >= minUtility) {
+			if (minUtility != 0 && population.get(i).getUtility() >= minUtility) {
 				insert(population.get(i));
 			}
 			// update gBest
@@ -315,34 +286,20 @@ public class AlgoHUIM_BPSO {
 //			crossover(i, gBest);
 
 			//GABPSO4 按一定概率进行交叉
-//			c2 = 0.2+0.6*iter/iterations;
-//			if(r1 > c2){
-//				crossover(i, pBest.get(i));
-//			}
-//			if(r2 < c2){
-//				crossover(i, gBest);
-//			}
-//			if( r1 <= c2 && r2 >= c2) {
-//				population.get(i).setNumOfOne(k);
-//			}
-
-			if(iter > 109){
-				c2 = 0.2+0.6*iter/iterations;
-				if(r1 > c2){
-					crossover(i, pBest.get(i));
-				}
-				if(r2 < c2){
-					crossover(i, gBest);
-				}
-				if( r1 <= c2 && r2 >= c2) {
-					population.get(i).setNumOfOne(k);
-				}
-			}else{
+			c2 = 0.2+0.6*iter/iterations;
+			if(r1 > c2){
+				crossover(i, pBest.get(i));
+			}
+			if(r2 < c2){
+				crossover(i, gBest);
+			}
+			if( r1 <= c2 && r2 >= c2) {
 				population.get(i).setNumOfOne(k);
 			}
+
 			// calculate fitness
-			population.get(i).setFitness(fitCalculate(population.get(i),database,twuPattern));
-			if (minUtility != 0 && population.get(i).getFitness() >= minUtility){
+			fitCalculate(population.get(i),database,twuPattern, gBests);
+			if (minUtility != 0 && population.get(i).getUtility() >= minUtility){
 				insert(population.get(i));
 			}
 			// update pBest & gBest
@@ -448,7 +405,7 @@ public class AlgoHUIM_BPSO {
 		//huiSets.add(new HUI(temp.toString(), tempParticle.getFitness()));
 		// huiSets is null
 		if (huiSets.size() == 0) {
-			huiSets.add(new HUI(temp.toString(), tempParticle.getFitness()));
+			huiSets.add(new HUI(temp.toString(), tempParticle.getUtility()));
 		} else {
 			// huiSets is not null, judge whether exist an itemset in huiSets
 			// same with tempParticle
@@ -460,7 +417,7 @@ public class AlgoHUIM_BPSO {
 			// if not exist same itemset in huiSets with tempParticle,insert it
 			// into huiSets
 			if (i == huiSets.size())
-				huiSets.add(new HUI(temp.toString(), tempParticle.getFitness()));
+				huiSets.add(new HUI(temp.toString(), tempParticle.getUtility()));
 		}
 	}
 
