@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static arm.algorithm.Common.checkMemory;
-import static arm.algorithm.Common.fitCalculate;
-import static arm.algorithm.Common.iterations;
+import static arm.algorithm.Common.*;
 
 
 /**
@@ -128,6 +126,7 @@ public class AlgoHUIM_BPSO {
 				population.clear();
 				pBest.clear();
 				generatePop(minUtility);
+                saveParticle(population,pBest,gBest,V);
 				gBestList.add(gBest.getFitness());
 				pBestList.add(Common.calAvg(pBest));
 				pBestSim.add(Common.calSim(pBest));
@@ -248,12 +247,14 @@ public class AlgoHUIM_BPSO {
 			k = 0;// record the count of 1 in particle
 			r1 = Math.random();
 			r2 = Math.random();
+            c2 = 0.2+0.6*iter/iterations;
+            c1 = 1 - c2;
 			long velStartTime = System.currentTimeMillis();
 			// update velocity
 			for (j = 0; j < twuPattern.size(); j++) {
-				double temp = V.get(i).get(j) + r1
+				double temp = V.get(i).get(j) + r1*2
 						* (pBest.get(i).getX().get(j) - population.get(i).getX().get(j))
-						+ r2 * (gBest.getX().get(j) - population.get(i).getX().get(j));
+						+ r2 *2* (gBest.getX().get(j) - population.get(i).getX().get(j));
 				V.get(i).set(j, temp);
 				if (V.get(i).get(j) < -4.0)
 					V.get(i).set(j, -4.0);
@@ -279,23 +280,23 @@ public class AlgoHUIM_BPSO {
 			particleTime += parEndTime - parStartTime;
 
 			//BPSO 没有交叉
-//			population.get(i).setNumOfOne(k);
+			population.get(i).setNumOfOne(k);
 
 			//GABPSO2 始终进行交叉
 //			crossover(i, pBest.get(i));
 //			crossover(i, gBest);
 
 			//GABPSO4 按一定概率进行交叉
-			c2 = 0.2+0.6*iter/iterations;
-			if(r1 > c2){
-				crossover(i, pBest.get(i));
-			}
-			if(r2 < c2){
-				crossover(i, gBest);
-			}
-			if( r1 <= c2 && r2 >= c2) {
-				population.get(i).setNumOfOne(k);
-			}
+
+//			if(r1 > c2){
+//				crossover(i, pBest.get(i));
+//			}
+//			if(r2 < c2){
+//				crossover(i, gBest);
+//			}
+//			if( r1 <= c2 && r2 >= c2) {
+//				population.get(i).setNumOfOne(k);
+//			}
 
 			// calculate fitness
 			fitCalculate(population.get(i),database,twuPattern, gBests);

@@ -18,13 +18,17 @@ import java.util.Map;
  * Created by jinxiaole on 2017/6/29.
  */
 public class Common {
-    final public static int pop_size = 10;// the size of populations
-    final public static int iterations = 20;// the iterations of algorithms
+    final public static int pop_size = 30;// the size of populations
+    final public static int iterations = 500;// the iterations of algorithms
     //final public static String input = "DB_Utility.txt";
-    final public static String input = "contextHUIM.txt";
+    //final public static String input = "contextHUIM.txt";
     //final public static String input = "mushroom_utility.txt";
-    //final public static String input = "chess_utility.txt";
+    final public static String input = "chess_utility.txt";
     final public static double min_utility_thres = 0;  //
+    public static List<Particle> cpop = new ArrayList<Particle>();;
+    public static List<Particle> cpBest = new ArrayList<Particle>();;
+    public static Particle cgbest = new Particle();
+    public static List<List<Double>> cV = new ArrayList<>();
     public static String fileToPath() throws UnsupportedEncodingException{
 
         URL  url =  Common.class .getResource("../test/"+input);      // 获得当前类所在路径
@@ -138,7 +142,25 @@ public class Common {
         }
 
     }
+    public static void saveParticle(List<Particle> pop, List<Particle> pBest, Particle gbest, List<List<Double>> v){
+        for(int i = 0; i < pop_size; i++){
+            Particle particleForPop = new Particle();
+            particleForPop.copyParticle(pop.get(i));
+            cpop.add(i,particleForPop);
 
+            Particle particleForPbest = new Particle();
+            particleForPbest.copyParticle(pBest.get(i));
+            cpBest.add(i,particleForPbest);
+
+            List<Double> tempV = new ArrayList<Double>();
+            for (int j = 0; j < gbest.getX().size(); j++) {
+                tempV.add(j, v.get(i).get(j));
+            }
+            cV.add(i, tempV);
+
+        }
+        cgbest.copyParticle(gbest);
+    }
 //    public static float utilityCalculate(Particle particle, List<Particle> particles) {
 //
 //        float sim = 0;
@@ -329,14 +351,14 @@ public class Common {
         buffer.append(System.lineSeparator());
         for (int i = 0; i < size; i++) {
             buffer.append(gBestList.get(i));
-            buffer.append(" ");
-            buffer.append(pBestList.get(i));
-            buffer.append(" ");
-            buffer.append(pBestSim.get(i));
-            buffer.append(" ");
-            buffer.append(popSim.get(i));
-            buffer.append(" ");
-            buffer.append(numsOFHUI.get(i));
+//            buffer.append(" ");
+//            buffer.append(pBestList.get(i));
+//            buffer.append(" ");
+//            buffer.append(pBestSim.get(i));
+//            buffer.append(" ");
+//            buffer.append(popSim.get(i));
+//            buffer.append(" ");
+//            buffer.append(numsOFHUI.get(i));
             buffer.append(System.lineSeparator());
         }
         // write to file

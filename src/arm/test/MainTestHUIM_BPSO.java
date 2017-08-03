@@ -24,6 +24,11 @@ public class MainTestHUIM_BPSO {
 
         AlgoHUIM_BPSO algo = new AlgoHUIM_BPSO();
 		algo.runAlgorithm(Common.fileToPath(), output,Common.min_utility_thres);
+
+		String outputga = ".//BPSOGAoutput.txt";
+
+		AlgoHUIM_BPSOGA algoga = new AlgoHUIM_BPSOGA();
+		algoga.runAlgorithm(Common.fileToPath(), outputga,Common.min_utility_thres);
 	}
 
 

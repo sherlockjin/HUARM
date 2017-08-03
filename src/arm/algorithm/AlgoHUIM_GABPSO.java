@@ -2,16 +2,10 @@ package arm.algorithm;
 
 import arm.entity.*;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +38,7 @@ import static arm.algorithm.Common.*;
  * @author Jerry Chun-Wei Lin, Lu Yang, Philippe Fournier-Viger
  */
 
-public class AlgoHUIM_BPSOGA {
+public class AlgoHUIM_GABPSO {
 	// variable for statistics
 	double maxMemory = 0; // the maximum memory usage
 	long totalTime = 0; //the total time
@@ -87,7 +81,7 @@ public class AlgoHUIM_BPSOGA {
 	/**
 	 * Default constructor
 	 */
-	public AlgoHUIM_BPSOGA() {
+	public AlgoHUIM_GABPSO() {
 	}
 
 	/**
@@ -193,23 +187,6 @@ public class AlgoHUIM_BPSOGA {
 		int i, j, k, temp;
 		// initial percentage according to the twu value of 1-HTWUIs
 		percentage = Common.roulettePercent(twuPattern,mapItemToTWU);
-//		Particle firstParticleForPop = new Particle(twuPattern.size());
-//		firstParticleForPop.X.clear();
-//		firstParticleForPop.X.add(0,0);
-//		firstParticleForPop.X.add(1,1);
-//		firstParticleForPop.X.add(2,0);
-//		firstParticleForPop.X.add(3,0);
-//		firstParticleForPop.X.add(4,1);
-//		firstParticleForPop.X.add(5,0);
-//		firstParticleForPop.X.add(6,0);
-//		firstParticleForPop.numOfOne = 2;
-//		firstParticleForPop.fitness = fitCalculate(firstParticleForPop);
-//		// insert particle into population
-//		population.add(0,firstParticleForPop);
-//		Particle firstParticleForPbest = new Particle();
-//		firstParticleForPbest.copyParticle(firstParticleForPop);
-//		pBest.add(0,firstParticleForPbest);
-//		gBest.copyParticle(pBest.get(0));
 		for (i = 0; i < pop_size; i++) {
 			// initial particles
 			Particle particleForPop = new Particle(twuPattern.size());
