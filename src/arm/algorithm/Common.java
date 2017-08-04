@@ -19,11 +19,12 @@ import java.util.Map;
  */
 public class Common {
     final public static int pop_size = 30;// the size of populations
-    final public static int iterations = 500;// the iterations of algorithms
+    final public static int iterations = 100;// the iterations of algorithms
     //final public static String input = "DB_Utility.txt";
     //final public static String input = "contextHUIM.txt";
-    //final public static String input = "mushroom_utility.txt";
+//    final public static String input = "mushroom_utility.txt";
     final public static String input = "chess_utility.txt";
+//    final public static double min_utility_thres = 0.29207724;  //chess
     final public static double min_utility_thres = 0;  //
     public static List<Particle> cpop = new ArrayList<Particle>();;
     public static List<Particle> cpBest = new ArrayList<Particle>();;
@@ -95,7 +96,7 @@ public class Common {
             return ;
         int i, j, p, q, temp;
 
-        int sum, fitness = 0;
+        int sum, utility = 0;
         for (p = 0; p < database.size(); p++) {// p scan the transactions in
             // database
             i = 0;
@@ -124,10 +125,10 @@ public class Common {
                     i++;
             }
             if (temp == k) {
-                fitness = fitness + sum;
+                utility = utility + sum;
             }
         }
-        particle.setUtility(fitness);
+        particle.setUtility(utility);
         float sim = 0;
         for(int num = 0; num < particles.size(); num++){
             sim += calJaccard(particle.getX(), particles.get(num).getX());
@@ -135,10 +136,10 @@ public class Common {
         if(particles.size() != 0) {
             sim = sim / particles.size();
             particle.setSim(sim);
-            particle.setFitness((float)fitness/particles.get(0).getUtility()*3+(1-sim));
+            particle.setFitness(((float)utility)/particles.get(0).getFitness()*4+(1-sim));
         }else{
             particle.setSim(-1);
-            particle.setFitness((float)fitness);
+            particle.setFitness((float)utility);
         }
 
     }
@@ -347,7 +348,7 @@ public class Common {
         StringBuilder buffer = new StringBuilder();
         int size = gBestList.size();
         // append the prefix
-        buffer.append("gbest pbestAvg pbestSim popSim numsOfHui");
+        buffer.append("gbest numsOfHui");
         buffer.append(System.lineSeparator());
         for (int i = 0; i < size; i++) {
             buffer.append(gBestList.get(i));
@@ -357,8 +358,8 @@ public class Common {
 //            buffer.append(pBestSim.get(i));
 //            buffer.append(" ");
 //            buffer.append(popSim.get(i));
-//            buffer.append(" ");
-//            buffer.append(numsOFHUI.get(i));
+            buffer.append(" ");
+            buffer.append(numsOFHUI.get(i));
             buffer.append(System.lineSeparator());
         }
         // write to file

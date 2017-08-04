@@ -121,35 +121,48 @@ public class AlgoHUIM_DBPSO {
 //			long updateStartTime = System.currentTimeMillis();
 
 			//direction表示搜索的方向
-			for(int direction = 0; direction < 1; direction++) {
+			for(int area = 0; gBestList.size() < iterations; area++) {
 
 				population.clear();
 				pBest.clear();
+
 				generatePop(minUtility);
-                saveParticle(population,pBest,gBest,V);
-				//inintPop();
+				saveParticle(population, pBest, gBest, V);
+
 
 				gBestList.add(gBest.getFitness());
-				pBestList.add(Common.calAvg(pBest));
-				pBestSim.add(Common.calSim(pBest));
-				popSim.add(Common.calSim(population));
+				//pBestList.add(Common.calAvg(pBest));
+				//pBestSim.add(Common.calSim(pBest));
+				//popSim.add(Common.calSim(population));
 				numOfHUI.add(huiSets.size());
-				for (int i = 0; i < Common.iterations; i++) {
+				int iter = 0;
+				while(iter != -1) {
 					// update population and HUIset
-					update(minUtility, i);
+					update(minUtility, iter);
 					float pbestSim = Common.calSim(pBest);
 					float pbestAvg = Common.calAvg(pBest);
 
 					gBestList.add(gBest.getFitness());
-					pBestList.add(pbestAvg);
-					pBestSim.add(pbestSim);
-					popSim.add(Common.calSim(population));
+					//pBestList.add(pbestAvg);
+					//pBestSim.add(pbestSim);
+					//popSim.add(Common.calSim(population));
 					numOfHUI.add(huiSets.size());
 
+//					if(iter > 40 && Math.abs(gBestList.get(iter)-gBestList.get(iter-40))<0.000001){
+//						break;
+//					}
+					iter++;
+					if(gBestList.size() == iterations){
+						break;
+					}
+
+
 				}
-				System.out.println(direction + "-update end. HUIs No. is "
+				System.out.println("area "+ area + ": No. of HUIs is "
 						+ huiSets.size());
-                gBests.add(gBest);
+				Particle tempParticle = new Particle();
+				tempParticle.copyParticle(gBest);
+                gBests.add(tempParticle);
 
 
 			}
@@ -263,29 +276,39 @@ public class AlgoHUIM_DBPSO {
 	private void update(int minUtility, int iter) {
 		int i, j, k;
 		double r1, r2, temp1, temp2;
-		double c1 = 0.4 ,c2 = 0.6;
+		double c1 = 0.2 ,c2 = 0.2;
 		double d1 = 0, d2 = 6;
+		double Vmax = 4.0;
 		for (i = 0; i < Common.pop_size; i++) {
 			k = 0;// record the count of 1 in particle
 			r1 = Math.random();
 			r2 = Math.random();
-            c2 = 0.2+0.6*iter/iterations;
-            c1 = 1 - c2;
 
-			d2 = 1+5*iter/iterations;
-			d1 = 7-d2;
+			c2 = 0.1 * iter / iterations;
+			c1 = 0.1 - 0.1 * iter / iterations;
+			if(r1 < c1){
+				crossover(i, pBest.get(i));
+			}
+			if(r2 < c2){
+				crossover(i, gBest);
+			}
+
+
+//
+//			d2 = 2+8*iter/iterations;
+//			d1 = 7-d2;
 			long velStartTime = System.currentTimeMillis();
 			// update velocity
 			for (j = 0; j < twuPattern.size(); j++) {
-//				double temp = V.get(i).get(j) + r1*2
-//						* (pBest.get(i).getX().get(j) - population.get(i).getX().get(j))
-//						+ r2 *6* (gBest.getX().get(j) - population.get(i).getX().get(j));
-				double temp = V.get(i).get(j) + r2 *d2* (gBest.getX().get(j) - population.get(i).getX().get(j));
+				double temp = V.get(i).get(j) + r1*d1
+						* (pBest.get(i).getX().get(j) - population.get(i).getX().get(j))
+						+ r2 *d2* (gBest.getX().get(j) - population.get(i).getX().get(j));
+//				double temp = V.get(i).get(j) + r2 *d2* (gBest.getX().get(j) - population.get(i).getX().get(j));
 				V.get(i).set(j, temp);
-				if (V.get(i).get(j) < -4.0)
-					V.get(i).set(j, -4.0);
-				else if (V.get(i).get(j) > 4.0)
-					V.get(i).set(j, 4.0);
+				if (V.get(i).get(j) < -Vmax)
+					V.get(i).set(j, -Vmax);
+				else if (V.get(i).get(j) > Vmax)
+					V.get(i).set(j, Vmax);
 			}
 			long velEndTime = System.currentTimeMillis();
 			velTime += velEndTime - velStartTime;
@@ -306,21 +329,21 @@ public class AlgoHUIM_DBPSO {
 			particleTime += parEndTime - parStartTime;
 
 			//BPSO 没有交叉
-			//population.get(i).setNumOfOne(k);
+			population.get(i).setNumOfOne(k);
 
 			//GABPSO2 始终进行交叉
 //			crossover(i, pBest.get(i));
 //			crossover(i, gBest);
 
-			if(r1 < c1){
-				crossover(i, pBest.get(i));
-			}
-			if(r2 < c2){
-				crossover(i, gBest);
-			}
-			if( r1 >= c1 && r2 >= c2) {
-				population.get(i).setNumOfOne(k);
-			}
+//			if(r1 < c1){
+//				crossover(i, pBest.get(i));
+//			}
+//			if(r2 < c2){
+//				crossover(i, gBest);
+//			}
+//			if( r1 >= c1 && r2 >= c2) {
+//				population.get(i).setNumOfOne(k);
+//			}
 
 			//GABPSO4 按一定概率进行交叉
 
@@ -424,6 +447,32 @@ public class AlgoHUIM_DBPSO {
 		}*/
 	}
 
+	/**
+	 * Method to crossover population[temp1] and temp2
+	 * @param temp1
+	 *            the number of particle to crossover
+	 * @param temp2
+	 *            the pbest particle or the gbest particle
+	 *
+	 */
+	private void crossover2(int temp1, Particle temp2) {
+		int i = 0;
+		int temp = 0;// record the number of 1 in chromosomes
+
+
+
+		for (i = 0; i < twuPattern.size(); i++) {// i<=position, crossover
+			if (temp2.getX().get(i).equals(population.get(temp1).getX().get(i))) {
+				population.get(temp1).getX().set(i, 0);
+
+			} else {
+				population.get(temp1).getX().set(i, 1);
+				temp++;
+			}
+		}
+		population.get(temp1).setNumOfOne(temp);
+
+	}
 	/**
 	 * Method to inseret tempParticle to huiSets
 	 * 

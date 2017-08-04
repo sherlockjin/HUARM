@@ -48,7 +48,7 @@ public class AlgoHUIM_GABPSO {
 	long crossPBestTime = 0; // the time of crossover with pbest
 	long crossGBestTime = 0; //the time of crossover with gbest
 
-	final double w = 1, c1 = 1, c2 = 1;//the parameter used in BPSO algorithm
+	//final double w = 1, c1 = 1, c2 = 1;//the parameter used in BPSO algorithm
 
 	// Create a list to store database
 	List<List<Pair>> database = new ArrayList<List<Pair>>();
@@ -135,7 +135,7 @@ public class AlgoHUIM_GABPSO {
 			long updateStartTime = System.currentTimeMillis();
 			for (int i = 0; i < Common.iterations; i++) {
 				// update population and HUIset
-				update(minUtility);
+				update(minUtility, i);
 
 				gBestList.add(gBest.getFitness());
 				pBestList.add(Common.calAvg(pBest));
@@ -233,20 +233,20 @@ public class AlgoHUIM_GABPSO {
 	 * Methos to update particle, velocity, pBest and gBest
 	 *
 	 */
-	private void update(int minUtility) {
+	private void update(int minUtility, int iter) {
 		double r0, r1, r2;
-	
+		double c1 = 0.5 ,c2 = 0.5;
 
 		for (int i = 0; i < pop_size; i++) {
 
 			r0 = Math.random();
 			r1 = Math.random();
 			r2 = Math.random();
-
+			c2 = 0.2+0.6*iter/iterations;
+			c1 = 1- c2;
 			long mutationStartTimestamp = System.currentTimeMillis();
-			if(r0 < w) {
-				mutation(i);
-			}
+			mutation(i);
+
 			long mutationEndTimestamp = System.currentTimeMillis();
 			mutationTime += mutationEndTimestamp - mutationStartTimestamp;
 
