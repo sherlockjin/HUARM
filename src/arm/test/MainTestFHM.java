@@ -22,9 +22,9 @@ public class MainTestFHM {
 		String output = ".//FHMoutput.txt";
 		//String input = fileToPath("contextHUIM.txt");
 		//String input = fileToPath("chess_utility.txt");
-		//int min_utility = 300000;  //
+		int min_utility = 500000;  //
 
-		int min_utility = 30;  //
+//		int min_utility = 100000;  //
 
 
 		// Applying the HUIMiner algorithm

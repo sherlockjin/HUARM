@@ -125,8 +125,8 @@ public class AlgoHUIM_BBPSO {
 
 				population.clear();
 				pBest.clear();
-
-				inintPop();
+				generatePop(minUtility);
+//				inintPop();
 
 
 				gBestList.add(gBest.getFitness());

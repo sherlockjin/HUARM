@@ -16,26 +16,26 @@ import java.util.Map;
 /**
  * * * * This is an implementation of the high utility itemset mining algorithm
  * based on Binary Particle Swarm Optimization and using OR/NOR-tree structure.
- * 
+ *
  * Copyright (c) 2016 Jerry Chun-Wei Lin, Lu Yang, Philippe Fournier-Viger
- * 
+ *
  * This file is part of the SPMF DATA MINING SOFTWARE *
  * (http://www.philippe-fournier-viger.com/spmf).
- * 
- * 
+ *
+ *
  * SPMF is free software: you can redistribute it and/or modify it under the *
  * terms of the GNU General Public License as published by the Free Software *
  * Foundation, either version 3 of the License, or (at your option) any later *
  * version. *
- * 
+ *
  * SPMF is distributed in the hope that it will be useful, but WITHOUT ANY *
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * *
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * * SPMF. If not, see .
- * 
+ *
  * @author Jerry Chun-Wei Lin, Lu Yang, Philippe Fournier-Viger
  */
 
@@ -111,7 +111,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * Run the algorithm
-	 * 
+	 *
 	 * @param input
 	 *            the input file path
 	 * @param output
@@ -265,7 +265,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * Method to check whether an itemset is the maximal pattern
-	 * 
+	 *
 	 * @param pattern
 	 *            the transaction in database need to judge
 	 */
@@ -319,7 +319,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * Method to initial OR/NOR-tree structure
-	 * 
+	 *
 	 * @param htwuiList
 	 *            the list of items which has higher twu value than minUtil
 	 * @return the root of OR.NOR-tree structure
@@ -389,7 +389,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * This is the method to initial population
-	 * 
+	 *
 	 * @param minUtility
 	 *            minimum utility threshold
 	 */
@@ -434,7 +434,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * Methos to update particle, velocity, pBest and gBest
-	 * 
+	 *
 	 * @param minUtility
 	 */
 	private void update(int minUtility) {
@@ -482,7 +482,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * Method to initial particle use OR/NOR-tree
-	 * 
+	 *
 	 * @param tempNode
 	 * @return the updated particle
 	 */
@@ -530,7 +530,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * Method to update particle use OR/NOR-tree
-	 * 
+	 *
 	 * @param tempParticle
 	 *            the particle need to update
 	 * @param i
@@ -584,7 +584,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * Method to inseret tempParticle to huiSets
-	 * 
+	 *
 	 * @param tempParticle
 	 *            the particle to be inserted
 	 */
@@ -617,7 +617,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * Method to calculate the fitness of each particle
-	 * 
+	 *
 	 * @param tempParticle
 	 * @param k
 	 *            the number of 1 in particle
@@ -665,7 +665,7 @@ public class AlgoHUIM_BPSO_tree {
 
 	/**
 	 * Method to write a high utility itemset to the output file.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private void writeOut() throws IOException {

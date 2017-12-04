@@ -19,13 +19,16 @@ import java.util.Map;
  */
 public class Common {
     final public static int pop_size = 30;// the size of populations
-    final public static int iterations = 100;// the iterations of algorithms
+    final public static int iterations =1000;// the iterations of algorithms
     //final public static String input = "DB_Utility.txt";
     //final public static String input = "contextHUIM.txt";
 //    final public static String input = "mushroom_utility.txt";
     final public static String input = "chess_utility.txt";
-//    final public static double min_utility_thres = 0.29207724;  //chess
-    final public static double min_utility_thres = 0;  //
+    final public static double min_utility_thres = 0.29207724;  //chess
+//    final public static String input = "chess_negative.txt";
+//    final public static double min_utility_thres = 0.18;  //chess
+//    final public static double min_utility_thres = 0;  //
+//    final public static double min_utility_thres = 0.30244;  //
     public static List<Particle> cpop = new ArrayList<Particle>();;
     public static List<Particle> cpBest = new ArrayList<Particle>();;
     public static Particle cgbest = new Particle();
